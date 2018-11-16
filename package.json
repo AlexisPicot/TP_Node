@@ -1,0 +1,24 @@
+{
+  "name": "tp_starter",
+  "version": "1.0.0",
+  "description": "**TOUS LES FICHIERS JAVASCRIPT (_*.js_) DOIVENT COMMENCER PAR `'use strict';`**",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "private": true,
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.4",
+    "mocha": "^5.2.0",
+    "image-type": "^3.0.0"
+  },
+  "devDependencies": {
+    "nyc": "^13.1.0"
+  }
+}
