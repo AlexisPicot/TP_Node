@@ -1,7 +1,7 @@
 describe('Test de content.model', () => {
 
     const CONFIG = require('../config.json');
-    CONFIG.contentDirectory = `${CONFIG.contentDirectory}\\test\\_test_${Date.now()}`;
+    CONFIG.contentDirectory = `${CONFIG.contentDirectory}/test/_test_${Date.now()}`;
     process.env.CONFIG = JSON.stringify(CONFIG);
 
     const assert = require('assert');
@@ -134,7 +134,8 @@ describe('Test de content.model', () => {
                         ContentModel.read(content.id, (err, data) => {
                             assert.ifError(err);
 
-                            assert.ok(data instanceof ContentModel);let assign = Object.assign({}, content);
+                            assert.ok(data instanceof ContentModel);
+                            let assign = Object.assign({}, content);
                             assign._data=undefined;
                             assert.equal(JSON.stringify(data), JSON.stringify(assign));
 

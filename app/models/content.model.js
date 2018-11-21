@@ -4,6 +4,7 @@
 const fs = require("fs");
 const path = require("path");
 const CONFIG = JSON.parse(process.env.CONFIG);
+const { base64encode, base64decode } = require('nodejs-base64');
 
 
 const imageType = require('image-type');
@@ -66,16 +67,15 @@ if (!obj) return;
                    new_content._data = undefined;
                    fs.writeFile(file, JSON.stringify(new_content, null, 2), (err) => {
                        if (err) throw err;
-                       callback();
+                       callback(null,content._id);
                    });
                });
            }else{
                fs.writeFile(file, JSON.stringify(content, null, 2), (err) => {
                    if (err) throw err;
-                   callback();
+                   callback(null,content._id);
                });
            }
-
 
        }
     static read(id, callback) {
@@ -90,7 +90,7 @@ if (!obj) return;
             content =  JSON.parse(content);
         }
         if(!content._id) {callback("L'id ne peut pas être nul");return}
-
+        this.getContent(content._id,err=>callback(err));
         this.read(content._id,(err, old_content)=>{
             if ((content._type ==='img' && old_content._type!=='img' )||(old_content._fileName!==content._fileName)){
                 if (!content.data) callback("Pour mettre à jour un contenu de type image, merci de spécifier un attribut data contenant les bytes (Uint8Array) du fichier image");

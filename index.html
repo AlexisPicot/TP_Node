@@ -1,0 +1,166 @@
+<!doctype html>
+<html>
+<head>
+    <title>Socket.IO chat</title>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+          crossorigin="anonymous">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font: 13px Helvetica, Arial;
+        }
+
+        form {
+            background: #000;
+            padding: 3px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        form input {
+            border: 0;
+            padding: 10px;
+            width: 90%;
+            margin-right: .5%;
+        }
+
+        form button {
+            width: 9%;
+            background: rgb(130, 224, 255);
+            border: none;
+            padding: 10px;
+        }
+
+        #messages {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        #messages li {
+            padding: 5px 10px;
+        }
+
+        #messages li:nth-child(odd) {
+            background: #eee;
+        }
+    </style>
+</head>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const pres_id = "efa0a79a-2f20-4e97-b0b7-71f824bfe349";
+    const socket = io();
+    socket.emit('data_comm', pres_id);
+
+    function emit(cmd) {
+
+        socket.emit('slidEvent', `{"CMD": "${cmd}",   "PRES_ID": "${pres_id}"}`);
+    }
+
+
+    socket.on('START', function (msg) {
+        let parse = JSON.parse(msg);
+        for (i = 0; i < parse.slidArray.length; i++) {
+            $('#carouselIndicators').append(`<li data-target="#carouselExampleIndicators" data-slide-to="${i}" class="${i === 1 ? "active" : ""}"></li>`);
+            $('#carouselItems').append(
+                `<div id="slide_${i}" class="carousel-item ${i === 1 ? "active" : ""}">
+                        <img class="d-block w-100" src="/contents/${parse.slidArray[i].contentMap['1']}" alt="Slide ${i}">
+                        <div class="carousel-caption d-none d-md-block">
+                            <h5>${parse.slidArray[i].title}</h5>
+                             <p>${parse.slidArray[i].txt}</p>
+                         </div>
+                </div>`);
+        }
+    });
+    socket.on('END', function (msg) {
+        $('#alert').modal();
+        for (i = 0; i < parse.slidArray.length; i++) {
+            $('#carouselIndicators').empty();
+            $('#carouselItems').empty();
+        }
+    });
+    socket.on('command_received', function (msg) {
+        alert(msg);
+    });
+
+
+</script>
+<body>
+<div class="jumbotron">
+    <div id="alert" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalCenterTitle">Presentation ended</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <strong>Thank's for watching</strong>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+        Start presentation
+    </button>
+    <div class="collapse" id="collapseExample">
+        <div class="card card-body">
+            <div id="carouselExampleIndicators" class="carousel slide w-50" style="margin: auto" data-ride="carousel">
+                <ol id="carouselIndicators" class="carousel-indicators">
+
+                </ol>
+                <div id="carouselItems" class="carousel-inner">
+
+                </div>
+                <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="btn-group" role="group" aria-label="Basic example">
+        <button type="button" onclick="emit('START')" class="btn btn-success">START</button>
+        <button type="button" onclick="emit('PAUSE')" class="btn btn-warning">PAUSE</button>
+        <button type="button" onclick="emit('END'  )" class="btn btn-danger">END</button>
+        <button type="button" onclick="emit('BEGIN')" class="btn btn-primary">BEGIN</button>
+        <button type="button" onclick="emit('PREV' )" class="btn btn-secondary">PREV</button>
+        <button type="button" onclick="emit('NEXT' )" class="btn btn-secondary">NEXT</button>
+    </div>
+
+
+</div>
+<script>
+    $('#collapseExample').on('show.bs.collapse', function () {
+        emit("START");
+    });
+    $('#collapseExample').on('hide.bs.collapse', function () {
+        emit("END");
+    })
+
+</script>
+</body>
+</html>

@@ -1,5 +1,5 @@
 {
   "port": 1337,
-  "contentDirectory":"C:\\Users\\apicot\\Perso\\tp_starter\\tp_starter\\content",
-  "presentationDirectory":"C:\\Users\\apicot\\Perso\\tp_starter\\tp_starter\\presentation"
+  "contentDirectory":"/Users/Alex/IdeaProjects/TP_Node/content",
+  "presentationDirectory":"/Users/Alex/IdeaProjects/TP_Node/presentation"
 }
